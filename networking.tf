@@ -42,7 +42,6 @@ resource "aws_eip" "app_server" {
   vpc                       = true
   network_interface         = aws_network_interface.app_server.id
   associate_with_private_ip = "10.0.1.10"
-  depends_on                = [aws_instance.app_server]
 
   tags = {
     Name = "NextcloudPublicEip"

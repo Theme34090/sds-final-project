@@ -1,0 +1,13 @@
+    echo "${file("${path.module}/app-server/nextcloud.conf")}" > /tmp/nextcloud.conf
+    echo '${templatefile("${path.module}/app-server/setup.sh", {
+      database_name = var.database_name,
+      database_user = var.database_user,
+      database_pass = var.database_pass,
+      admin_user    = var.admin_user,
+      admin_pass    = var.admin_pass,
+      public_ip     = aws_eip.app_server.public_ip,
+      s3_key        = aws_iam_access_key.s3.id,
+      s3_secret     = aws_iam_access_key.s3.secret
+    })}' > /tmp/setup.sh
+    chmod +x /tmp/setup.sh
+    /tmp/setup.sh
