@@ -1,6 +1,13 @@
+resource "aws_key_pair" "nextcloud" {
+  key_name   = "nextcloud"
+  public_key = file(var.pubkey_path)
+}
+
 resource "aws_instance" "db_server" {
   ami           = var.ami
-  instance_type = "t2.micro"
+  instance_type = var.instance_type
+
+  depends_on    = [aws_nat_gateway.gw]
 
   network_interface {
     device_index         = 0
@@ -29,7 +36,7 @@ tags = {
 
 resource "aws_instance" "app_server" {
   ami           = var.ami
-  instance_type = "t2.micro"
+  instance_type = var.instance_type
   key_name      = var.key_name
 
   network_interface {
@@ -42,7 +49,7 @@ resource "aws_instance" "app_server" {
     device_index         = 1
   }
 
-  depends_on = [aws_eip.app_server, aws_iam_access_key.s3, aws_s3_bucket.bucket]
+  depends_on = [aws_eip.app_server, aws_iam_access_key.s3, aws_s3_bucket.bucket, aws_instance.db_server]
 
   user_data = <<-EOF
     #!/bin/bash
